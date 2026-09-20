@@ -1,4 +1,7 @@
 class Item:
+    # Ownable gives the item an owner (set_owner / self.owner).
+    from ownable import set_owner
+
     instances = []
 
     def __init__(self, name, price, owner=None):

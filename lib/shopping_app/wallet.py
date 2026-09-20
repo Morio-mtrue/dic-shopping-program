@@ -1,4 +1,6 @@
 class Wallet:
+    # Ownable gives the wallet an owner (set_owner / self.owner).
+    from ownable import set_owner
 
     def __init__(self, owner):
         self.set_owner(owner)

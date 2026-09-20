@@ -1,4 +1,6 @@
 class Cart:
+    # Ownable gives the cart an owner (set_owner / self.owner).
+    from ownable import set_owner
     from item_manager import show_items
 
     def __init__(self, owner):
@@ -18,14 +20,18 @@ class Cart:
         return sum(price_list)
 
     def check_out(self):
+        # Not enough money in the cart owner's wallet: buy nothing.
         if self.owner.wallet.balance < self.total_amount():
-            pass    # check_outメソッドをコーディングする際はpassは削除してください。
-        # 要件
-        #   - カートの中身（Cart#items）のすべてのアイテムの購入金額が、カートのオーナーのウォレットからアイテムのオーナーのウォレットに移されること。
-        #   - カートの中身（Cart#items）のすべてのアイテムのオーナー権限が、カートのオーナーに移されること。
-        #   - カートの中身（Cart#items）が空になること。
-        # ヒント
-        #   - カートのオーナーのウォレット ==> self.owner.wallet
-        #   - アイテムのオーナーのウォレット ==> item.owner.wallet
-        #   - お金が移されるということ ==> (？)のウォレットからその分を引き出して、(？)のウォレットにその分を入金するということ
-        #   - アイテムのオーナー権限がカートのオーナーに移されること ==> オーナーの書き換え（item.owner = ?）
+            print("残高が不足しているため購入できません")
+            return
+
+        for item in self.items:
+            # The price is withdrawn from the cart owner's wallet and
+            # deposited into the item owner's wallet.
+            self.owner.wallet.withdraw(item.price)
+            item.owner.wallet.deposit(item.price)
+            # Ownership of the item moves to the cart owner.
+            item.set_owner(self.owner)
+
+        # The cart is emptied once every item has been paid for.
+        self.items = []
